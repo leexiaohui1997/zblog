@@ -1,0 +1,24 @@
+$container-max-width: 1200px; // 容器最大宽度（居中）
+$aside-width: 240px; // 右侧栏固定宽度（PC）
+$gap-desktop: 20px; // PC 布局主/侧之间的间距
+$gap-mobile: 16px; // 移动端主/侧之间的间距
+$gutter-desktop: 16px; // PC 容器左右内边距
+$gutter-mobile: 12px; // 移动端容器左右内边距
+$breakpoint-desktop: 960px; // PC/移动分界断点
+
+$font-size-root-desktop: 100px; // PC 下 1rem = 100px
+$design-mobile-width: 375px; // 移动端设计基准宽度
+$line-height-base: 1.5; // 基础行高
+
+// 以下为 CSS 变量在 SCSS 中的代理，方便在样式中直接引用
+$color-bg: var(--color-bg);
+$color-text: var(--color-text);
+$color-primary: var(--color-primary);
+$color-success: var(--color-success);
+$color-error: var(--color-error);
+$color-border: var(--color-border);
+$color-muted: var(--color-muted);
+
+$z-layout: 10; // 布局层级
+$z-overlay: 900; // 蒙层层级
+$z-modal: 1100; // 弹窗层级

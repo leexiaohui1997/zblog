@@ -17,6 +17,8 @@
     "vue-router": "^4.5.1"
   },
   "devDependencies": {
-    "@types/node": "^24.6.2"
+    "@types/node": "^24.6.2",
+    "postcss-pxtorem": "^6.1.0",
+    "sass-embedded": "^1.93.2"
   }
 }

@@ -1,0 +1,25 @@
+@use "./variables" as *;
+
+// PC 端样式封装（≥960px）
+@mixin desktop {
+  @media (min-width: $breakpoint-desktop) {
+    @content;
+  }
+}
+
+// 移动端样式封装（<960px）
+@mixin mobile {
+  @media (max-width: calc(#{$breakpoint-desktop} - 1px)) {
+    @content;
+  }
+}
+
+// 统一的容器样式（居中、内边距、最大宽度）
+@mixin container {
+  max-width: $container-max-width;
+  margin: 0 auto;
+  padding: $gutter-desktop;
+  @include mobile {
+    padding: $gutter-mobile;
+  }
+}

@@ -1,58 +1,69 @@
 <template>
-  <section style="padding: 24px">
-    <h1>连接健康检查</h1>
-    <div v-if="loading">加载中...</div>
+  <section class="health">
+    <h1 class="title">连接健康检查</h1>
+    <div v-if="pending">加载中...</div>
     <div v-else>
       <p>
         <strong>MySQL：</strong>
-        <span :style="statusStyle(mysql.ok)">{{ mysql.ok ? '正常' : '异常' }}</span>
-        <span v-if="mysql.error" style="color:#c00">（{{ mysql.error }}）</span>
+        <span :class="statusClass(mysql.ok)">{{ mysql.ok ? '正常' : '异常' }}</span>
+        <span v-if="mysql.error" class="error">（{{ mysql.error }}）</span>
       </p>
       <p>
         <strong>Redis：</strong>
-        <span :style="statusStyle(redis.ok)">{{ redis.ok ? '正常' : '异常' }}</span>
-        <span v-if="redis.error" style="color:#c00">（{{ redis.error }}）</span>
+        <span :class="statusClass(redis.ok)">{{ redis.ok ? '正常' : '异常' }}</span>
+        <span v-if="redis.error" class="error">（{{ redis.error }}）</span>
       </p>
       <small>更新时间：{{ timestamp }}</small>
     </div>
-    <button @click="fetchStatus" style="margin-top:12px">重新检查</button>
+    <button @click="fetchStatus" class="btn">重新检查</button>
   </section>
   
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-
+// 使用 SSR 获取数据，确保首屏 HTML 与客户端初始渲染一致
 type HealthItem = { ok: boolean; error?: string }
-type HealthResponse = {
-  mysql: HealthItem
-  redis: HealthItem
-  timestamp: string
-}
+type HealthResponse = { mysql: HealthItem; redis: HealthItem; timestamp: string }
 
-const loading = ref(true)
-const mysql = ref<{ ok: boolean; error?: string }>({ ok: false })
-const redis = ref<{ ok: boolean; error?: string }>({ ok: false })
-const timestamp = ref('')
+const { data, pending, error, refresh } = await useFetch<HealthResponse>('/api/health', {
+  server: true,
+  default: () => ({ mysql: { ok: false }, redis: { ok: false }, timestamp: '' })
+})
 
-function statusStyle(ok: boolean) {
-  return ok ? 'color:#0a0' : 'color:#c00'
-}
+const mysql = computed(() => data.value?.mysql ?? { ok: false })
+const redis = computed(() => data.value?.redis ?? { ok: false })
+const timestamp = computed(() => data.value?.timestamp ?? '')
 
-async function fetchStatus() {
-  loading.value = true
-  try {
-    const res = await $fetch<HealthResponse>('/api/health')
-    mysql.value = res.mysql
-    redis.value = res.redis
-    timestamp.value = res.timestamp
-  } catch (e: any) {
-    mysql.value = { ok: false, error: String(e) }
-    redis.value = { ok: false, error: String(e) }
-  } finally {
-    loading.value = false
-  }
-}
-
-onMounted(fetchStatus)
+function statusClass(ok: boolean) { return ok ? 'ok' : 'bad' }
+function fetchStatus() { return refresh() }
 </script>
+
+<style lang="scss" scoped>
+@use "~/assets/styles/mixins" as *;
+@use "~/assets/styles/variables" as *;
+
+.health {
+  padding: 16px;
+}
+
+.sidebar {
+  padding: 16px;
+  border: 1px solid $color-border;
+  border-radius: 8px;
+}
+
+.title { margin-bottom: 12px; }
+
+.btn {
+  margin-top: 12px;
+  padding: 8px 12px;
+  border: 1px solid $color-border;
+  border-radius: 6px;
+  background: transparent;
+}
+
+.ok { color: #0a0; }
+.bad { color: #c00; }
+.error { color: #c00; }
+
+</style>
