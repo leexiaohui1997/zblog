@@ -42,10 +42,6 @@ function fetchStatus() { return refresh() }
 @use "~/assets/styles/mixins" as *;
 @use "~/assets/styles/variables" as *;
 
-.health {
-  padding: 16px;
-}
-
 .sidebar {
   padding: 16px;
   border: 1px solid $color-border;
