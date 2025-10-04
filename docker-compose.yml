@@ -1,0 +1,48 @@
+name: ${PROJECT_NAME:-demo}
+
+services:
+  mysql:
+    image: mysql:8.4
+    platform: linux/arm64/v8
+    container_name: ${PROJECT_NAME:-demo}-mysql
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    expose:
+      - "3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Please set MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:?Please set MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER:?Please set MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?Please set MYSQL_PASSWORD}
+      MYSQL_ROOT_HOST: ${MYSQL_ROOT_HOST:-%}
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - ./data_mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$MYSQL_ROOT_PASSWORD || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  redis:
+    image: redis:7-alpine
+    platform: linux/arm64/v8
+    container_name: ${PROJECT_NAME:-demo}-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    expose:
+      - "6379"
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD?:Please set REDIS_PASSWORD}
+    command: ["redis-server", "--appendonly", "yes", "--requirepass", "${REDIS_PASSWORD}"]
+    volumes:
+      - ./data_redis:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a \"$REDIS_PASSWORD\" ping || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s

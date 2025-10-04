@@ -22,3 +22,7 @@ logs
 .env
 .env.*
 !.env.example
+
+# Docker volumes
+data_mysql
+data_redis
