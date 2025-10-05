@@ -1,28 +1,6 @@
 @use "./variables" as *;
 @use "./mixins" as *;
 
-// 浅色主题
-:root {
-  --color-bg: #ffffff;
-  --color-text: #1f2937;
-  --color-primary: #3b82f6;
-  --color-success: #10b981;
-  --color-error: #ef4444;
-  --color-border: #e5e7eb;
-  --color-muted: #6b7280;
-}
-
-// 暗色主题
-:root[data-theme='dark'] {
-  --color-bg: #0b0f18;
-  --color-text: #e5e7eb;
-  --color-primary: #60a5fa;
-  --color-success: #34d399;
-  --color-error: #f87171;
-  --color-border: #1f2937;
-  --color-muted: #9ca3af;
-}
-
 body {
   margin: 0;
   color: $color-text;

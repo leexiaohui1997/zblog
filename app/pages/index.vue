@@ -1,3 +1,5 @@
 <template>
-  <h1>Hello World</h1>
+  <div>
+    <UIcon name="i-fa-plus" />
+  </div>
 </template>

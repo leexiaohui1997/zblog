@@ -1,0 +1,18 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+@theme static {
+  --color-brand-500: #22C6F3;
+
+  --color-brand-50:  color-mix(in oklab, white 94%, var(--color-brand-500));
+  --color-brand-100: color-mix(in oklab, white 88%, var(--color-brand-500));
+  --color-brand-200: color-mix(in oklab, white 78%, var(--color-brand-500));
+  --color-brand-300: color-mix(in oklab, white 66%, var(--color-brand-500));
+  --color-brand-400: color-mix(in oklab, white 50%, var(--color-brand-500));
+
+  --color-brand-600: color-mix(in oklab, black 12%, var(--color-brand-500));
+  --color-brand-700: color-mix(in oklab, black 24%, var(--color-brand-500));
+  --color-brand-800: color-mix(in oklab, black 36%, var(--color-brand-500));
+  --color-brand-900: color-mix(in oklab, black 52%, var(--color-brand-500));
+  --color-brand-950: color-mix(in oklab, black 68%, var(--color-brand-500));
+}

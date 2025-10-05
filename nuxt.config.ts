@@ -1,10 +1,14 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: false },
+  modules: ['@nuxt/ui', '@nuxt/icon'],
   css: [
+    '~/assets/css/main.css',
     '~/assets/styles/base.scss'
   ],
+  ui: {
+    fonts: false
+  },
   vite: {
     css: {
       preprocessorOptions: {
@@ -17,7 +21,7 @@ export default defineNuxtConfig({
   postcss: {
     plugins: {
       'postcss-pxtorem': {
-        rootValue: 100,
+        rootValue: 16,
         propList: ['*'],
         unitPrecision: 5,
         exclude: /node_modules/i
