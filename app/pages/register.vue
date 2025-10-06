@@ -1,6 +1,10 @@
 <template>
-  <UForm :state="state">
-    <UFormField label="邮箱">
+  <UForm :state="state" class="space-y-4">
+    <UFormField>
+      <template #label>
+        <span class="text-red-500">*</span>
+        邮箱
+      </template>
       <div class="flex items-center gap-2">
         <UInput class="flex-1" v-model="state.email" type="email" placeholder="邮箱" />
         <UButton :loading="sendingCode" :disabled="disableRequestCode" @click="onRequestCode">
@@ -9,19 +13,27 @@
       </div>
     </UFormField>
 
-    <UFormField label="验证码">
-      <UInput v-model="state.code" placeholder="六位数字验证码" />
+    <UFormField>
+      <template #label>
+        <span class="text-red-500">*</span>
+        验证码
+      </template>
+      <UInput v-model="state.code" placeholder="六位数字验证码" class="w-full" />
     </UFormField>
 
-    <UFormField label="密码">
-      <UInput v-model="state.password" type="password" placeholder="至少 8 位，需包含字母与数字" />
+    <UFormField>
+      <template #label>
+        <span class="text-red-500">*</span>
+        密码
+      </template>
+      <PasswordInput v-model="state.password" placeholder="至少 8 位，需包含字母与数字" class="w-full" />
     </UFormField>
 
     <UFormField label="昵称（可选）">
-      <UInput v-model="state.nickname" placeholder="2–32 字符，支持中英文、数字、下划线、短横线" />
+      <UInput v-model="state.nickname" placeholder="2–32 字符，支持中英文、数字、下划线、短横线" class="w-full" />
     </UFormField>
 
-    <div>
+    <div class="flex justify-center">
       <UButton color="primary" :loading="submitting" @click="onSubmit">
         提交注册
       </UButton>
@@ -31,6 +43,9 @@
 
 <script setup lang="ts">
 import { reactive, ref, computed, onMounted, onUnmounted } from 'vue'
+import PasswordInput from '~/components/PasswordInput.vue'
+
+definePageMeta({ layout: 'auth' })
 
 const toast = useToast()
 
@@ -41,15 +56,15 @@ const state = reactive({
   nickname: ''
 })
 
-
 const sendingCode = ref(false)
 const submitting = ref(false)
 const cooldownUntil = ref<Date | null>(null)
 const timer = ref<number | null>(null)
+const nowMs = ref(Date.now())
 
 const remainingSeconds = computed(() => {
   if (!cooldownUntil.value) return 0
-  const ms = cooldownUntil.value.getTime() - Date.now()
+  const ms = cooldownUntil.value.getTime() - nowMs.value
   return ms > 0 ? Math.ceil(ms / 1000) : 0
 })
 
@@ -60,8 +75,8 @@ const sendCodeLabel = computed(() => {
 
 onMounted(() => {
   timer.value = window.setInterval(() => {
-    // 触发 remainingSeconds 计算
-    if (cooldownUntil.value && remainingSeconds.value <= 0) {
+    nowMs.value = Date.now()
+    if (cooldownUntil.value && nowMs.value >= cooldownUntil.value.getTime()) {
       cooldownUntil.value = null
     }
   }, 1000)
@@ -121,6 +136,10 @@ async function onRequestCode() {
       }
     } else {
       toast.add({ title: '发送失败', description: String(res?.message || '请稍后重试'), color: 'error' })
+      const cd = res?.error?.cooldownUntil || res?.cooldownUntil
+      if (cd) {
+        cooldownUntil.value = new Date(cd)
+      }
     }
   } catch (err: any) {
     showError(err, '发送失败')
@@ -147,10 +166,8 @@ async function onSubmit() {
       }
     })
     if (res?.ok) {
-      toast.add({ title: '注册成功', description: `用户ID：${res.userId}`, color: 'success' })
-      // 可选：清空表单
-      // state.code = ''
-      // state.password = ''
+      toast.add({ title: '注册成功', description: '请登录', color: 'success' })
+      await navigateTo('/login')
     } else {
       toast.add({ title: '注册失败', description: String(res?.message || '请稍后再试'), color: 'error' })
     }

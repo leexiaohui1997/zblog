@@ -6,6 +6,11 @@ export default defineNuxtConfig({
     '~/assets/css/main.css',
     '~/assets/styles/base.scss'
   ],
+  runtimeConfig: {
+    public: {
+      projectName: process.env.PROJECT_NAME
+    }
+  },
   ui: {
     fonts: false
   },
