@@ -80,6 +80,13 @@ pnpm db:migrate
 | `OTP_SEND_LIMIT_PER_MINUTE` | 每分钟发送上限 | `3` |
 | `OTP_VERIFY_MAX_ATTEMPTS` | 最大验证失败次数（`0` 不限制） | `5` |
 
+### 登录尝试限制
+
+| 变量 | 说明 | 示例 |
+| --- | --- | --- |
+| `LOGIN_ATTEMPTS_MAX` | 登录失败最大次数（`0` 不限制） | `5` |
+| `LOGIN_ATTEMPTS_WINDOW_SECONDS` | 登录失败计数窗口（秒） | `900` |
+
 ### SMTP（发信通道）
 
 | 变量 | 说明 | 示例 |
