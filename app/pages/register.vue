@@ -13,7 +13,7 @@
         <span class="text-red-500">*</span>
         验证码
       </template>
-      <UInput v-model="state.code" placeholder="六位数字验证码" class="w-full" />
+      <UInput v-model="state.code" placeholder="验证码" class="w-full" />
     </UFormField>
 
     <UFormField>
@@ -29,7 +29,7 @@
     </UFormField>
 
     <div class="flex justify-center">
-      <UButton color="primary" :loading="submitting" @click="onSubmit">
+      <UButton color="primary" :loading="submitting" @click="onSubmit" class="w-[100px] justify-center">
         提交注册
       </UButton>
     </div>
