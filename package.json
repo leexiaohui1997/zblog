@@ -1,5 +1,5 @@
 {
-  "name": "nuxt-app",
+  "name": "zblog",
   "type": "module",
   "private": true,
   "scripts": {
