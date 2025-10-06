@@ -5,12 +5,7 @@
         <span class="text-red-500">*</span>
         邮箱
       </template>
-      <div class="flex items-center gap-2">
-        <UInput class="flex-1" v-model="state.email" type="email" placeholder="邮箱" />
-        <UButton :loading="sendingCode" :disabled="disableRequestCode" @click="onRequestCode">
-          {{ sendCodeLabel }}
-        </UButton>
-      </div>
+      <EmailInput v-model="state.email" scene="register" />
     </UFormField>
 
     <UFormField>
@@ -43,6 +38,7 @@
 
 <script setup lang="ts">
 import { reactive, ref, computed, onMounted, onUnmounted } from 'vue'
+import EmailInput from '~/components/EmailInput.vue'
 import PasswordInput from '~/components/PasswordInput.vue'
 
 definePageMeta({ layout: 'auth' })
@@ -56,35 +52,7 @@ const state = reactive({
   nickname: ''
 })
 
-const sendingCode = ref(false)
 const submitting = ref(false)
-const cooldownUntil = ref<Date | null>(null)
-const timer = ref<number | null>(null)
-const nowMs = ref(Date.now())
-
-const remainingSeconds = computed(() => {
-  if (!cooldownUntil.value) return 0
-  const ms = cooldownUntil.value.getTime() - nowMs.value
-  return ms > 0 ? Math.ceil(ms / 1000) : 0
-})
-
-const disableRequestCode = computed(() => sendingCode.value || remainingSeconds.value > 0)
-const sendCodeLabel = computed(() => {
-  return remainingSeconds.value > 0 ? `重新获取（${remainingSeconds.value}s）` : '获取验证码'
-})
-
-onMounted(() => {
-  timer.value = window.setInterval(() => {
-    nowMs.value = Date.now()
-    if (cooldownUntil.value && nowMs.value >= cooldownUntil.value.getTime()) {
-      cooldownUntil.value = null
-    }
-  }, 1000)
-})
-
-onUnmounted(() => {
-  if (timer.value) window.clearInterval(timer.value)
-})
 
 function validateEmail(email: string): boolean {
   const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -116,36 +84,6 @@ function validateFirst(): string | null {
 function showError(err: any, fallback = '请求失败') {
   const message = err?.data?.message || err?.message || fallback
   toast.add({ title: '错误', description: String(message), color: 'error' })
-}
-
-async function onRequestCode() {
-  if (!validateEmail(state.email)) {
-    toast.add({ title: '邮箱格式不正确', description: '请检查输入', color: 'error' })
-    return
-  }
-  try {
-    sendingCode.value = true
-    const res: any = await $fetch('/api/auth/register/request-code', {
-      method: 'POST',
-      body: { email: state.email }
-    })
-    if (res?.ok) {
-      toast.add({ title: '验证码已发送', description: '请查收邮件', color: 'success' })
-      if (res.cooldownUntil) {
-        cooldownUntil.value = new Date(res.cooldownUntil)
-      }
-    } else {
-      toast.add({ title: '发送失败', description: String(res?.message || '请稍后重试'), color: 'error' })
-      const cd = res?.error?.cooldownUntil || res?.cooldownUntil
-      if (cd) {
-        cooldownUntil.value = new Date(cd)
-      }
-    }
-  } catch (err: any) {
-    showError(err, '发送失败')
-  } finally {
-    sendingCode.value = false
-  }
 }
 
 async function onSubmit() {
