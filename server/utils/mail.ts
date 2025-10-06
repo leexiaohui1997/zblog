@@ -10,7 +10,6 @@ export interface RenderContext {
   ttlMinutes: number
   scene: Scene
   now: string
-  supportEmail?: string
   helpers?: {
     uppercase: (s: string) => string
     spacedCode: (code: string) => string
@@ -23,7 +22,7 @@ const helpers = {
 }
 
 function getAppName(): string {
-  return process.env.APP_NAME || 'ZBlog'
+  return process.env.PROJECT_NAME || 'ZBlog'
 }
 
 function getTtlMinutes(): number {
@@ -43,7 +42,6 @@ export async function renderEmail(scene: Scene, ctx?: Partial<RenderContext>): P
     ttlMinutes: getTtlMinutes(),
     scene,
     now: new Date().toISOString(),
-    supportEmail: process.env.SUPPORT_EMAIL,
     helpers,
   }
 
