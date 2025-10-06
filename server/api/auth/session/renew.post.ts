@@ -1,8 +1,8 @@
-import { defineEventHandler } from 'h3'
+import { defineAuthEventHandler } from '../../../utils/handlers/auth'
 import { renewAppSession } from '../../../utils/session'
 import { replyError } from '../../../utils/auth'
 
-export default defineEventHandler(async (event) => {
+export default defineAuthEventHandler(async (event) => {
   try {
     const r = await renewAppSession(event)
     if (!r.ok) {
