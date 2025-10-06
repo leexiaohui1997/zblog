@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@iconify-json/fa": "^1.2.2",
+    "@iconify-json/lucide": "^1.2.68",
     "@nuxt/icon": "^2.0.0",
     "@nuxt/ui": "^4.0.1",
     "@vue/server-renderer": "^3.5.22",
