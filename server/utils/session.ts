@@ -1,6 +1,7 @@
 import { getRedis } from './redis'
 import { setCookie, getCookie, H3Event } from 'h3'
 import { randomBytes } from 'node:crypto'
+import type { AppSessionCore, AppSessionData, AppSessionRecord } from '../types/session'
 
 function getEnvNumber(name: string, fallback: number): number {
   const v = process.env[name]
@@ -25,7 +26,7 @@ function makeSessionKey(sid: string) {
   return `session:${sid}`
 }
 
-export async function createAppSession(event: H3Event, payload: any): Promise<{ sid: string, ttlSeconds: number }> {
+export async function createAppSession(event: H3Event, payload: AppSessionCore): Promise<{ sid: string, ttlSeconds: number }> {
   const redis = getRedis()
   const ttl = getSessionTtlSeconds()
 
@@ -39,7 +40,7 @@ export async function createAppSession(event: H3Event, payload: any): Promise<{ 
 
   const sid = cryptoRandomHex(32)
   const key = makeSessionKey(sid)
-  const data = { ...payload, createdAtISO: new Date().toISOString() }
+  const data: AppSessionData = { ...payload, createdAtISO: new Date().toISOString() }
   await redis.set(key, JSON.stringify(data), 'EX', ttl)
   setCookie(event, getSessionCookieName(), sid, {
     httpOnly: true,
@@ -51,14 +52,14 @@ export async function createAppSession(event: H3Event, payload: any): Promise<{ 
   return { sid, ttlSeconds: ttl }
 }
 
-export async function getAppSession(event: H3Event): Promise<{ sid: string, data: any } | null> {
+export async function getAppSession(event: H3Event): Promise<AppSessionRecord | null> {
   const redis = getRedis()
   const sid = getCookie(event, getSessionCookieName())
   if (!sid) return null
   const raw = await redis.get(makeSessionKey(sid))
   if (!raw) return null
   try {
-    const data = JSON.parse(raw)
+    const data = JSON.parse(raw) as AppSessionData
     return { sid, data }
   } catch {
     return null
